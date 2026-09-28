@@ -9,12 +9,10 @@
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
     body { background:#0a0a0a; color:#e0e0e0; min-height:100vh; display:flex; flex-direction:column; }
     
-    /* Header */
     header { background:#111; border-bottom:1px solid #c5a059; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
     .brand { font-family:'Cinzel',serif; font-size:1.4rem; color:#d4af37; letter-spacing:2px; font-weight:700; }
     .status-badge { background:rgba(212,175,55,0.1); border:1px solid #d4af37; color:#d4af37; font-size:0.75rem; padding:6px 12px; border-radius:20px; }
 
-    /* Layout */
     .admin-container { display:flex; flex:1; }
     .sidebar { width:240px; background:#0d0d0d; border-right:1px solid #222; padding:20px 10px; display:flex; flex-direction:column; gap:8px; }
     .nav-btn { background:transparent; border:none; color:#888; padding:12px 18px; text-align:left; font-size:0.9rem; font-weight:500; border-radius:8px; cursor:pointer; transition:0.3s; }
@@ -25,31 +23,26 @@
     .tab-content.active { display:block; animation:fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 
-    /* Cards */
     .grid-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:30px; }
     .stat-card { background:#141414; border:1px solid #222; border-radius:12px; padding:20px; border-top:2px solid #d4af37; }
     .stat-title { font-size:0.8rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
     .stat-val { font-size:1.8rem; font-weight:600; color:#fff; }
     .stat-val span { color:#d4af37; font-size:1.2rem; }
 
-    /* Table */
     .table-card { background:#141414; border:1px solid #222; border-radius:12px; padding:20px; overflow-x:auto; }
     table { width:100%; border-collapse:collapse; text-align:left; font-size:0.85rem; }
     th { padding:14px; border-bottom:1px solid #222; color:#888; font-weight:500; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; }
     td { padding:14px; border-bottom:1px solid #1a1a1a; color:#ddd; vertical-align:middle; }
     tr:hover { background:#191919; }
 
-    /* Form Styles */
     .form-card { background:#141414; border:1px solid #222; border-radius:12px; padding:25px; max-width:600px; margin-bottom:30px; }
     .form-group { margin-bottom:16px; }
     .form-group label { display:block; font-size:0.8rem; color:#aaa; margin-bottom:6px; }
     .form-group input, .form-group textarea { width:100%; background:#0a0a0a; border:1px solid #333; color:#fff; padding:12px; border-radius:6px; font-size:0.9rem; outline:none; }
     .form-group input:focus, .form-group textarea:focus { border-color:#d4af37; }
-    .gold-btn { background:#d4af37; color:#000; font-weight:600; border:none; padding:12px 24px; border-radius:6px; cursor:pointer; transition:0.3s; }
-    .gold-btn:hover { background:#b5932d; }
+    .gold-btn { background:#d4af37; color:#000; font-weight:600; border:none; padding:12px 24px; border-radius:6px; cursor:pointer; }
     .del-btn { background:#c23934; color:#fff; border:none; padding:6px 12px; border-radius:4px; font-size:0.75rem; cursor:pointer; }
 
-    /* Product Grid */
     .product-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:20px; }
     .p-item { background:#141414; border:1px solid #222; border-radius:10px; overflow:hidden; }
     .p-item img { width:100%; height:140px; object-fit:cover; }
@@ -81,7 +74,7 @@
 
     <div class="main-content">
       
-      <!-- Tab 1: Analytics & Revenue -->
+      <!-- Analytics Tab -->
       <div id="tab-analytics" class="tab-content active">
         <div class="grid-stats">
           <div class="stat-card">
@@ -99,7 +92,7 @@
         </div>
       </div>
 
-      <!-- Tab 2: Orders -->
+      <!-- Orders Tab -->
       <div id="tab-orders" class="tab-content">
         <h2 style="font-family:'Cinzel',serif; color:#d4af37; margin-bottom:20px; font-size:1.3rem;">Recent Customer Orders</h2>
         <div class="table-card">
@@ -107,10 +100,10 @@
             <thead>
               <tr>
                 <th>Order ID</th>
-                <th>Date</th>
                 <th>Customer</th>
                 <th>Phone</th>
-                <th>Address</th>
+                <th>Product</th>
+                <th>UTR / Ref</th>
                 <th>Total</th>
                 <th>Status</th>
               </tr>
@@ -122,7 +115,7 @@
         </div>
       </div>
 
-      <!-- Tab 3: Products -->
+      <!-- Products Tab -->
       <div id="tab-products" class="tab-content">
         <h2 style="font-family:'Cinzel',serif; color:#d4af37; margin-bottom:20px; font-size:1.3rem;">Add New Product</h2>
         <div class="form-card">
@@ -163,7 +156,6 @@
     }
 
     async function loadData() {
-      // Fetch Orders
       const resOrders = await fetch('/api/orders');
       const orders = await resOrders.json();
       
@@ -179,10 +171,10 @@
           tBody.innerHTML += `
             <tr>
               <td style="color:#d4af37; font-weight:600;">${o.id || 'N/A'}</td>
-              <td>${new Date(o.date).toLocaleDateString()}</td>
               <td>${o.customerName || 'Customer'}</td>
               <td>${o.phone || '-'}</td>
-              <td style="max-width:200px;">${o.address || '-'}</td>
+              <td>${o.productName || 'Order Item'}</td>
+              <td><span style="background:#222; padding:3px 8px; border-radius:4px; font-family:monospace; color:#4ade80;">${o.utr || 'N/A'}</span></td>
               <td style="font-weight:600; color:#fff;">₹${o.total || 0}</td>
               <td><span style="background:rgba(212,175,55,0.1); border:1px solid #d4af37; color:#d4af37; padding:4px 8px; border-radius:12px; font-size:0.75rem;">${o.status || 'Pending'}</span></td>
             </tr>
@@ -193,7 +185,6 @@
       document.getElementById('monthlyRevenue').innerText = revenue.toLocaleString();
       document.getElementById('totalOrdersCount').innerText = orders.length;
 
-      // Fetch Products
       const resProducts = await fetch('/api/products');
       const products = await resProducts.json();
       document.getElementById('totalProductsCount').innerText = products.length;
