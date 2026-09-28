@@ -1,82 +1,93 @@
 const express = require('express');
-const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(cors());
 app.use(express.json());
-
-// Public folder path fix
 app.use(express.static(path.join(__dirname, 'public')));
 
-let orders = [];
+const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 
-// Home route explicitly serve index.html
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
+const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
+
+// Initial dummy products if not exists
+const defaultProducts = [
+  { id: 1, name: "Ambraas Royal Oud Attar", price: 1499, image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=500", desc: "Pure organic oud formulation with 24hr longevity." },
+  { id: 2, name: "Ambraas Velvet Rose Serum", price: 999, image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500", desc: "Gold infused radiant skin serum." },
+  { id: 3, name: "Ambraas Noir Beard Elixir", price: 799, image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500", desc: "Premium grooming oil with cedarwood extracts." }
+];
+
+function readJSON(file, defaultVal) {
+  if (!fs.existsSync(file)) {
+    fs.writeFileSync(file, JSON.stringify(defaultVal, null, 2));
+    return defaultVal;
+  }
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (e) {
+    return defaultVal;
+  }
+}
+
+function writeJSON(file, data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+
+// APIs
+app.get('/api/products', (req, res) => {
+  const products = readJSON(PRODUCTS_FILE, defaultProducts);
+  res.json(products);
 });
 
-// Admin page route
+app.post('/api/products', (req, res) => {
+  const products = readJSON(PRODUCTS_FILE, defaultProducts);
+  const { name, price, image, desc } = req.body;
+  const newProduct = {
+    id: Date.now(),
+    name,
+    price: Number(price),
+    image: image || "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500",
+    desc: desc || ""
+  };
+  products.push(newProduct);
+  writeJSON(PRODUCTS_FILE, products);
+  res.json({ success: true, product: newProduct });
+});
+
+app.delete('/api/products/:id', (req, res) => {
+  let products = readJSON(PRODUCTS_FILE, defaultProducts);
+  products = products.filter(p => p.id != req.params.id);
+  writeJSON(PRODUCTS_FILE, products);
+  res.json({ success: true });
+});
+
+app.get('/api/orders', (req, res) => {
+  const orders = readJSON(ORDERS_FILE, []);
+  res.json(orders);
+});
+
+app.post('/api/orders', (req, res) => {
+  const orders = readJSON(ORDERS_FILE, []);
+  const newOrder = {
+    id: 'AMB-' + Math.floor(100000 + Math.random() * 900000),
+    date: new Date().toISOString(),
+    ...req.body,
+    status: 'Pending'
+  };
+  orders.unshift(newOrder);
+  writeJSON(ORDERS_FILE, orders);
+  res.json({ success: true, order: newOrder });
+});
+
+// Admin Route
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// Order Placement API
-app.post('/api/order', (req, res) => {
-  const { name, phone, address, city, pincode, product, price, paymentMethod } = req.body;
-  if (!name || !phone || !address || !pincode) {
-    return res.status(400).json({ success: false, message: "Kripya sabhi details bharein!" });
-  }
-
-  const newOrder = {
-    id: "AMB-" + (orders.length + 101),
-    name,
-    phone,
-    address,
-    city: city || "N/A",
-    pincode,
-    product,
-    price,
-    paymentMethod: paymentMethod || "Cash on Delivery (COD)",
-    status: "Confirmed",
-    date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-  };
-
-  orders.push(newOrder);
-  console.log("✨ NAYA ORDER AAYA HAI - AMBRAAS ✨", newOrder);
-  res.json({ success: true, order: newOrder });
-});
-
-// Track API
-app.get('/api/track/:orderId', (req, res) => {
-  const found = orders.find(o => o.id.toLowerCase() === req.params.orderId.trim().toLowerCase());
-  if (found) {
-    res.json({ success: true, order: found });
-  } else {
-    res.status(404).json({ success: false, message: "Order ID nahi mili!" });
-  }
-});
-
-// My Orders API
-app.get('/api/my-orders/:phone', (req, res) => {
-  const customerOrders = orders.filter(o => o.phone.trim() === req.params.phone.trim());
-  res.json({ success: true, orders: customerOrders });
-});
-
-// Admin APIs
-app.get('/api/orders', (req, res) => res.json(orders));
-
-app.post('/api/order/status', (req, res) => {
-  const { id, status } = req.body;
-  const order = orders.find(o => o.id === id);
-  if (order) {
-    order.status = status;
-    res.json({ success: true, message: "Status updated" });
-  } else {
-    res.status(404).json({ success: false, message: "Order not found" });
-  }
-});
-
-app.listen(3000, () => {
-  console.log("Ambraas Store Server is Running: http://localhost:3000");
+app.listen(PORT, () => {
+  console.log(`Ambraas Server Running on port ${PORT}`);
 });

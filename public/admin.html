@@ -3,162 +3,242 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ambraas Management Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <title>Ambraas Professional — Executive Admin Suite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --gold: #d4af37;
-      --gold-light: #f3e5ab;
-      --bg: #0d0d0d;
-      --card-bg: #161616;
-      --border: rgba(212, 175, 55, 0.25);
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+    body { background:#0a0a0a; color:#e0e0e0; min-height:100vh; display:flex; flex-direction:column; }
+    
+    /* Header */
+    header { background:#111; border-bottom:1px solid #c5a059; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; }
+    .brand { font-family:'Cinzel',serif; font-size:1.4rem; color:#d4af37; letter-spacing:2px; font-weight:700; }
+    .status-badge { background:rgba(212,175,55,0.1); border:1px solid #d4af37; color:#d4af37; font-size:0.75rem; padding:6px 12px; border-radius:20px; }
+
+    /* Layout */
+    .admin-container { display:flex; flex:1; }
+    .sidebar { width:240px; background:#0d0d0d; border-right:1px solid #222; padding:20px 10px; display:flex; flex-direction:column; gap:8px; }
+    .nav-btn { background:transparent; border:none; color:#888; padding:12px 18px; text-align:left; font-size:0.9rem; font-weight:500; border-radius:8px; cursor:pointer; transition:0.3s; }
+    .nav-btn:hover, .nav-btn.active { background:rgba(212,175,55,0.15); color:#d4af37; border-left:3px solid #d4af37; }
+
+    .main-content { flex:1; padding:30px; overflow-y:auto; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; animation:fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Cards */
+    .grid-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:30px; }
+    .stat-card { background:#141414; border:1px solid #222; border-radius:12px; padding:20px; border-top:2px solid #d4af37; }
+    .stat-title { font-size:0.8rem; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+    .stat-val { font-size:1.8rem; font-weight:600; color:#fff; }
+    .stat-val span { color:#d4af37; font-size:1.2rem; }
+
+    /* Table */
+    .table-card { background:#141414; border:1px solid #222; border-radius:12px; padding:20px; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; text-align:left; font-size:0.85rem; }
+    th { padding:14px; border-bottom:1px solid #222; color:#888; font-weight:500; text-transform:uppercase; font-size:0.75rem; letter-spacing:1px; }
+    td { padding:14px; border-bottom:1px solid #1a1a1a; color:#ddd; vertical-align:middle; }
+    tr:hover { background:#191919; }
+
+    /* Form Styles */
+    .form-card { background:#141414; border:1px solid #222; border-radius:12px; padding:25px; max-width:600px; margin-bottom:30px; }
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:0.8rem; color:#aaa; margin-bottom:6px; }
+    .form-group input, .form-group textarea { width:100%; background:#0a0a0a; border:1px solid #333; color:#fff; padding:12px; border-radius:6px; font-size:0.9rem; outline:none; }
+    .form-group input:focus, .form-group textarea:focus { border-color:#d4af37; }
+    .gold-btn { background:#d4af37; color:#000; font-weight:600; border:none; padding:12px 24px; border-radius:6px; cursor:pointer; transition:0.3s; }
+    .gold-btn:hover { background:#b5932d; }
+    .del-btn { background:#c23934; color:#fff; border:none; padding:6px 12px; border-radius:4px; font-size:0.75rem; cursor:pointer; }
+
+    /* Product Grid */
+    .product-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:20px; }
+    .p-item { background:#141414; border:1px solid #222; border-radius:10px; overflow:hidden; }
+    .p-item img { width:100%; height:140px; object-fit:cover; }
+    .p-info { padding:12px; }
+    .p-title { font-size:0.9rem; font-weight:600; color:#fff; margin-bottom:4px; }
+    .p-price { color:#d4af37; font-weight:600; font-size:0.95rem; margin-bottom:8px; }
+
+    @media(max-width:768px) {
+      .admin-container { flex-direction:column; }
+      .sidebar { width:100%; flex-direction:row; overflow-x:auto; border-right:none; border-bottom:1px solid #222; }
+      .nav-btn { white-space:nowrap; }
+      .main-content { padding:15px; }
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: #fff; font-family: 'Montserrat', sans-serif; padding: 15px; }
-
-    /* Login Screen */
-    #loginScreen { max-width: 360px; margin: 80px auto; background: var(--card-bg); border: 1px solid var(--border); padding: 30px 20px; border-radius: 12px; text-align: center; }
-    #loginScreen h2 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 20px; }
-    input[type="password"] { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 15px; outline: none; text-align: center; }
-    input[type="password"]:focus { border-color: var(--gold); }
-    .btn-gold { width: 100%; background: linear-gradient(135deg, #aa820a, var(--gold)); color: #000; font-weight: bold; padding: 12px; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
-
-    /* Dashboard */
-    #dashboardScreen { display: none; max-width: 600px; margin: auto; }
-    header { text-align: center; padding: 15px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-    header h1 { font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold); }
-    header p { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 4px; }
-
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 8px; text-align: center; }
-    .kpi-card.full { grid-column: span 2; }
-    .kpi-title { font-size: 11px; color: #aaa; text-transform: uppercase; margin-bottom: 5px; }
-    .kpi-val { font-size: 24px; font-weight: bold; color: var(--gold-light); font-family: 'Cinzel', serif; }
-
-    .order-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; }
-    .order-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #252525; padding-bottom: 8px; margin-bottom: 10px; }
-    .order-id { font-weight: bold; color: var(--gold); }
-    .order-price { font-weight: bold; color: var(--gold-light); font-size: 15px; }
-
-    .action-row { display: flex; gap: 8px; margin-top: 12px; }
-    .btn-action { flex: 1; text-align: center; padding: 8px; border-radius: 5px; font-size: 12px; text-decoration: none; font-weight: 600; }
-    .btn-call { background: #222; color: #fff; border: 1px solid #444; }
-    .btn-wa { background: #1e3b2b; color: #25d366; border: 1px solid #25d366; }
-
-    select.status-select { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 5px 8px; border-radius: 4px; font-size: 12px; outline: none; margin-top: 8px; width: 100%; }
   </style>
 </head>
 <body>
 
-  <!-- Password Lock -->
-  <div id="loginScreen">
-    <h2>Ambraas Portal</h2>
-    <p style="font-size:12px; color:#888; margin-bottom:15px;">Kripya Admin Password Enter Karein</p>
-    <input type="password" id="adminPass" placeholder="Password daalo">
-    <button class="btn-gold" onclick="verifyLogin()">Access Dashboard</button>
-  </div>
+  <header>
+    <div class="brand">AMBRAAS PROFESSIONAL</div>
+    <div class="status-badge">✦ EXECUTIVE SUITE</div>
+  </header>
 
-  <!-- Main Dashboard -->
-  <div id="dashboardScreen">
-    <header>
-      <h1>Ambraas Operations</h1>
-      <p>Store Owner Analytics & Orders</p>
-    </header>
-
-    <div class="stats-grid">
-      <div class="kpi-card full">
-        <div class="kpi-title">Gross Business Revenue</div>
-        <div class="kpi-val" id="totalRev">₹0</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Total Orders</div>
-        <div class="kpi-val" id="totalCount">0</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-title">Pending Dispatch</div>
-        <div class="kpi-val" id="pendingCount">0</div>
-      </div>
+  <div class="admin-container">
+    <div class="sidebar">
+      <button class="nav-btn active" onclick="switchTab('analytics')">📊 Analytics & Revenue</button>
+      <button class="nav-btn" onclick="switchTab('orders')">📦 Recent Orders</button>
+      <button class="nav-btn" onclick="switchTab('products')">✨ Manage Products</button>
     </div>
 
-    <h3 style="font-family:'Cinzel', serif; color:var(--gold); margin-bottom:15px;">Live Orders List</h3>
-    <div id="ordersList">Loading orders...</div>
+    <div class="main-content">
+      
+      <!-- Tab 1: Analytics & Revenue -->
+      <div id="tab-analytics" class="tab-content active">
+        <div class="grid-stats">
+          <div class="stat-card">
+            <div class="stat-title">Monthly Revenue</div>
+            <div class="stat-val"><span>₹</span><span id="monthlyRevenue">0</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Total Orders</div>
+            <div class="stat-val" id="totalOrdersCount">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Live Catalog Items</div>
+            <div class="stat-val" id="totalProductsCount">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Orders -->
+      <div id="tab-orders" class="tab-content">
+        <h2 style="font-family:'Cinzel',serif; color:#d4af37; margin-bottom:20px; font-size:1.3rem;">Recent Customer Orders</h2>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Total</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+              <tr><td colspan="7" style="text-align:center;">No orders yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3: Products -->
+      <div id="tab-products" class="tab-content">
+        <h2 style="font-family:'Cinzel',serif; color:#d4af37; margin-bottom:20px; font-size:1.3rem;">Add New Product</h2>
+        <div class="form-card">
+          <form id="addProductForm">
+            <div class="form-group">
+              <label>Product Name</label>
+              <input type="text" id="pName" placeholder="e.g. Imperial Silk Cream" required>
+            </div>
+            <div class="form-group">
+              <label>Price (₹)</label>
+              <input type="number" id="pPrice" placeholder="e.g. 1299" required>
+            </div>
+            <div class="form-group">
+              <label>Image URL</label>
+              <input type="url" id="pImg" placeholder="https://..." required>
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="pDesc" rows="3" placeholder="Luxury product highlights..."></textarea>
+            </div>
+            <button type="submit" class="gold-btn">+ Publish Product</button>
+          </form>
+        </div>
+
+        <h2 style="font-family:'Cinzel',serif; color:#d4af37; margin:30px 0 20px 0; font-size:1.3rem;">Active Catalog Products</h2>
+        <div class="product-grid" id="productsCatalog"></div>
+      </div>
+
+    </div>
   </div>
 
   <script>
-    const SECRET = "ambraas123"; // Default Password
-
-    function verifyLogin() {
-      const p = document.getElementById('adminPass').value;
-      if (p === SECRET) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('dashboardScreen').style.display = 'block';
-        fetchDashboard();
-        setInterval(fetchDashboard, 8000);
-      } else {
-        alert("Galat Password!");
-      }
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      event.target.classList.add('active');
     }
 
-    async function fetchDashboard() {
-      const res = await fetch('/api/orders');
-      const orders = await res.json();
-
-      let rev = 0, pending = 0;
-      orders.forEach(o => {
-        rev += (o.price || 0);
-        if (o.status !== 'Delivered' && o.status !== 'Cancelled') pending++;
-      });
-
-      document.getElementById('totalRev').innerText = '₹' + rev.toLocaleString('en-IN');
-      document.getElementById('totalCount').innerText = orders.length;
-      document.getElementById('pendingCount').innerText = pending;
-
-      if (orders.length === 0) {
-        document.getElementById('ordersList').innerHTML = '<p style="color:#777; text-align:center;">Abhi koi order nahi hai.</p>';
-        return;
+    async function loadData() {
+      // Fetch Orders
+      const resOrders = await fetch('/api/orders');
+      const orders = await resOrders.json();
+      
+      let revenue = 0;
+      const tBody = document.getElementById('ordersTableBody');
+      tBody.innerHTML = '';
+      
+      if(orders.length === 0) {
+        tBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:30px; color:#666;">No orders placed yet.</td></tr>';
+      } else {
+        orders.forEach(o => {
+          revenue += (Number(o.total) || 0);
+          tBody.innerHTML += `
+            <tr>
+              <td style="color:#d4af37; font-weight:600;">${o.id || 'N/A'}</td>
+              <td>${new Date(o.date).toLocaleDateString()}</td>
+              <td>${o.customerName || 'Customer'}</td>
+              <td>${o.phone || '-'}</td>
+              <td style="max-width:200px;">${o.address || '-'}</td>
+              <td style="font-weight:600; color:#fff;">₹${o.total || 0}</td>
+              <td><span style="background:rgba(212,175,55,0.1); border:1px solid #d4af37; color:#d4af37; padding:4px 8px; border-radius:12px; font-size:0.75rem;">${o.status || 'Pending'}</span></td>
+            </tr>
+          `;
+        });
       }
 
-      let html = '';
-      orders.slice().reverse().forEach(o => {
-        html += `
-          <div class="order-box">
-            <div class="order-top">
-              <span class="order-id">${o.id}</span>
-              <span class="order-price">₹${o.price}</span>
-            </div>
-            <p><b>Product:</b> ${o.product}</p>
-            <p><b>Client:</b> ${o.name}</p>
-            <p><b>Address:</b> ${o.address}, ${o.city} (${o.pincode})</p>
-            <p style="font-size:11px; color:#888;">Order Date: ${o.date}</p>
+      document.getElementById('monthlyRevenue').innerText = revenue.toLocaleString();
+      document.getElementById('totalOrdersCount').innerText = orders.length;
 
-            <div style="margin-top:10px;">
-              <label style="font-size:11px; color:#aaa;">Change Order Status:</label>
-              <select class="status-select" onchange="updateStatus('${o.id}', this.value)">
-                <option value="Confirmed" ${o.status==='Confirmed'?'selected':''}>Confirmed (Processing)</option>
-                <option value="Dispatched" ${o.status==='Dispatched'?'selected':''}>Dispatched (In Transit)</option>
-                <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
-                <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
-              </select>
-            </div>
+      // Fetch Products
+      const resProducts = await fetch('/api/products');
+      const products = await resProducts.json();
+      document.getElementById('totalProductsCount').innerText = products.length;
 
-            <div class="action-row">
-              <a href="tel:${o.phone}" class="btn-action btn-call">📞 Call Client</a>
-              <a href="https://wa.me/91${o.phone}?text=Namaste%20${encodeURIComponent(o.name)},%20Ambraas%20Professional%20se%20aapka%20order%20${o.id}%20confirm%20ho%20gaya%20hai." target="_blank" class="btn-action btn-wa">💬 WhatsApp</a>
+      const pCatalog = document.getElementById('productsCatalog');
+      pCatalog.innerHTML = '';
+      products.forEach(p => {
+        pCatalog.innerHTML += `
+          <div class="p-item">
+            <img src="${p.image}" alt="${p.name}">
+            <div class="p-info">
+              <div class="p-title">${p.name}</div>
+              <div class="p-price">₹${p.price}</div>
+              <button class="del-btn" onclick="deleteProduct(${p.id})">Delete</button>
             </div>
           </div>
         `;
       });
-      document.getElementById('ordersList').innerHTML = html;
     }
 
-    async function updateStatus(id, newStatus) {
-      await fetch('/api/order/status', {
+    document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newP = {
+        name: document.getElementById('pName').value,
+        price: document.getElementById('pPrice').value,
+        image: document.getElementById('pImg').value,
+        desc: document.getElementById('pDesc').value
+      };
+      await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status: newStatus })
+        body: JSON.stringify(newP)
       });
-      fetchDashboard();
+      document.getElementById('addProductForm').reset();
+      loadData();
+    });
+
+    async function deleteProduct(id) {
+      if(confirm('Are you sure you want to remove this product?')) {
+        await fetch('/api/products/' + id, { method: 'DELETE' });
+        loadData();
+      }
     }
+
+    loadData();
   </script>
 </body>
 </html>
