@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ambraas Management Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f3e5ab;
+      --bg: #0d0d0d;
+      --card-bg: #161616;
+      --border: rgba(212, 175, 55, 0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: #fff; font-family: 'Montserrat', sans-serif; padding: 15px; }
+
+    /* Login Screen */
+    #loginScreen { max-width: 360px; margin: 80px auto; background: var(--card-bg); border: 1px solid var(--border); padding: 30px 20px; border-radius: 12px; text-align: center; }
+    #loginScreen h2 { font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 20px; }
+    input[type="password"] { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 15px; outline: none; text-align: center; }
+    input[type="password"]:focus { border-color: var(--gold); }
+    .btn-gold { width: 100%; background: linear-gradient(135deg, #aa820a, var(--gold)); color: #000; font-weight: bold; padding: 12px; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
+
+    /* Dashboard */
+    #dashboardScreen { display: none; max-width: 600px; margin: auto; }
+    header { text-align: center; padding: 15px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    header h1 { font-family: 'Cinzel', serif; font-size: 22px; color: var(--gold); }
+    header p { font-size: 11px; color: #888; text-transform: uppercase; margin-top: 4px; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+    .kpi-card { background: var(--card-bg); border: 1px solid var(--border); padding: 15px; border-radius: 8px; text-align: center; }
+    .kpi-card.full { grid-column: span 2; }
+    .kpi-title { font-size: 11px; color: #aaa; text-transform: uppercase; margin-bottom: 5px; }
+    .kpi-val { font-size: 24px; font-weight: bold; color: var(--gold-light); font-family: 'Cinzel', serif; }
+
+    .order-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 15px; font-size: 13px; line-height: 1.6; }
+    .order-top { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #252525; padding-bottom: 8px; margin-bottom: 10px; }
+    .order-id { font-weight: bold; color: var(--gold); }
+    .order-price { font-weight: bold; color: var(--gold-light); font-size: 15px; }
+
+    .action-row { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-action { flex: 1; text-align: center; padding: 8px; border-radius: 5px; font-size: 12px; text-decoration: none; font-weight: 600; }
+    .btn-call { background: #222; color: #fff; border: 1px solid #444; }
+    .btn-wa { background: #1e3b2b; color: #25d366; border: 1px solid #25d366; }
+
+    select.status-select { background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 5px 8px; border-radius: 4px; font-size: 12px; outline: none; margin-top: 8px; width: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- Password Lock -->
+  <div id="loginScreen">
+    <h2>Ambraas Portal</h2>
+    <p style="font-size:12px; color:#888; margin-bottom:15px;">Kripya Admin Password Enter Karein</p>
+    <input type="password" id="adminPass" placeholder="Password daalo">
+    <button class="btn-gold" onclick="verifyLogin()">Access Dashboard</button>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div id="dashboardScreen">
+    <header>
+      <h1>Ambraas Operations</h1>
+      <p>Store Owner Analytics & Orders</p>
+    </header>
+
+    <div class="stats-grid">
+      <div class="kpi-card full">
+        <div class="kpi-title">Gross Business Revenue</div>
+        <div class="kpi-val" id="totalRev">₹0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Total Orders</div>
+        <div class="kpi-val" id="totalCount">0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Pending Dispatch</div>
+        <div class="kpi-val" id="pendingCount">0</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Cinzel', serif; color:var(--gold); margin-bottom:15px;">Live Orders List</h3>
+    <div id="ordersList">Loading orders...</div>
+  </div>
+
+  <script>
+    const SECRET = "ambraas123"; // Default Password
+
+    function verifyLogin() {
+      const p = document.getElementById('adminPass').value;
+      if (p === SECRET) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardScreen').style.display = 'block';
+        fetchDashboard();
+        setInterval(fetchDashboard, 8000);
+      } else {
+        alert("Galat Password!");
+      }
+    }
+
+    async function fetchDashboard() {
+      const res = await fetch('/api/orders');
+      const orders = await res.json();
+
+      let rev = 0, pending = 0;
+      orders.forEach(o => {
+        rev += (o.price || 0);
+        if (o.status !== 'Delivered' && o.status !== 'Cancelled') pending++;
+      });
+
+      document.getElementById('totalRev').innerText = '₹' + rev.toLocaleString('en-IN');
+      document.getElementById('totalCount').innerText = orders.length;
+      document.getElementById('pendingCount').innerText = pending;
+
+      if (orders.length === 0) {
+        document.getElementById('ordersList').innerHTML = '<p style="color:#777; text-align:center;">Abhi koi order nahi hai.</p>';
+        return;
+      }
+
+      let html = '';
+      orders.slice().reverse().forEach(o => {
+        html += `
+          <div class="order-box">
+            <div class="order-top">
+              <span class="order-id">${o.id}</span>
+              <span class="order-price">₹${o.price}</span>
+            </div>
+            <p><b>Product:</b> ${o.product}</p>
+            <p><b>Client:</b> ${o.name}</p>
+            <p><b>Address:</b> ${o.address}, ${o.city} (${o.pincode})</p>
+            <p style="font-size:11px; color:#888;">Order Date: ${o.date}</p>
+
+            <div style="margin-top:10px;">
+              <label style="font-size:11px; color:#aaa;">Change Order Status:</label>
+              <select class="status-select" onchange="updateStatus('${o.id}', this.value)">
+                <option value="Confirmed" ${o.status==='Confirmed'?'selected':''}>Confirmed (Processing)</option>
+                <option value="Dispatched" ${o.status==='Dispatched'?'selected':''}>Dispatched (In Transit)</option>
+                <option value="Delivered" ${o.status==='Delivered'?'selected':''}>Delivered</option>
+                <option value="Cancelled" ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
+              </select>
+            </div>
+
+            <div class="action-row">
+              <a href="tel:${o.phone}" class="btn-action btn-call">📞 Call Client</a>
+              <a href="https://wa.me/91${o.phone}?text=Namaste%20${encodeURIComponent(o.name)},%20Ambraas%20Professional%20se%20aapka%20order%20${o.id}%20confirm%20ho%20gaya%20hai." target="_blank" class="btn-action btn-wa">💬 WhatsApp</a>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('ordersList').innerHTML = html;
+    }
+
+    async function updateStatus(id, newStatus) {
+      await fetch('/api/order/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status: newStatus })
+      });
+      fetchDashboard();
+    }
+  </script>
+</body>
+</html>

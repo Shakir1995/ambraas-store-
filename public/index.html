@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ambraas Professional | Luxury Hair Care</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f5e7b2;
+      --gold-dark: #aa820a;
+      --bg: #0d0d0d;
+      --card-bg: #161616;
+      --border: rgba(212, 175, 55, 0.25);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg); color: #fff; font-family: 'Montserrat', sans-serif; padding-bottom: 70px; }
+
+    /* HEADER */
+    header { 
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(180deg, #18140a 0%, #0d0d0d 100%); 
+      border-bottom: 1px solid var(--border); 
+      padding: 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-logo-left {
+      width: 42px;
+      height: 42px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-logo-left svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.5));
+    }
+    .header-center-text { text-align: center; cursor: pointer; flex: 1; }
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3.5px;
+      background: linear-gradient(135deg, #ffffff 0%, var(--gold-light) 50%, var(--gold) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+    .brand-sub {
+      font-size: 8px;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    /* 3-LINE MENU BUTTON */
+    .menu-btn {
+      width: 38px;
+      height: 38px;
+      background: #141414;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .menu-bar { width: 20px; height: 2px; background: var(--gold); border-radius: 2px; }
+
+    /* SLIDE-IN DRAWER MENU */
+    .drawer-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      z-index: 999; display: none;
+    }
+    .drawer-menu {
+      position: fixed; top: 0; right: -300px; width: 280px; height: 100%;
+      background: #121212; border-left: 1px solid var(--border);
+      z-index: 1000; transition: right 0.3s ease;
+      display: flex; flex-direction: column; padding: 25px 20px;
+    }
+    .drawer-menu.open { right: 0; }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #222; padding-bottom: 15px; }
+    .close-btn { color: var(--gold); font-size: 24px; background: none; border: none; cursor: pointer; }
+    
+    .menu-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .menu-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 14px; border-radius: 8px; text-decoration: none;
+      color: #ddd; font-size: 13.5px; font-weight: 500; cursor: pointer;
+      background: #171717; border: 1px solid #242424; transition: 0.2s;
+    }
+    .menu-item:hover, .menu-item:active { background: #221d12; border-color: var(--gold); color: var(--gold-light); }
+    .menu-icon { font-size: 16px; width: 22px; text-align: center; color: var(--gold); }
+    .menu-badge { margin-left: auto; background: var(--gold); color: #000; font-size: 10px; font-weight: bold; padding: 2px 7px; border-radius: 10px; }
+
+    .container { max-width: 520px; margin: auto; padding: 15px; }
+    .page-title { font-family: 'Cinzel', serif; font-size: 20px; color: var(--gold); text-align: center; margin: 15px 0 20px; }
+
+    /* Product Grid */
+    .product-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    .p-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; }
+    .p-card img { width: 100%; height: 210px; object-fit: cover; }
+    .p-card-body { padding: 14px; }
+    .p-card-title { font-size: 16px; font-weight: 600; }
+    .p-card-tag { font-size: 12px; color: #999; margin: 4px 0 10px; }
+    .p-card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .p-card-price { font-size: 18px; font-weight: bold; color: var(--gold-light); }
+    .btn-view { background: transparent; border: 1px solid var(--gold); color: var(--gold); padding: 7px 14px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+
+    /* Product Details */
+    .detail-img-main { width: 100%; height: 260px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+    .thumbnail-row { display: flex; gap: 8px; margin: 10px 0 15px; overflow-x: auto; }
+    .thumb-img { width: 65px; height: 65px; object-fit: cover; border-radius: 6px; border: 1px solid #333; cursor: pointer; }
+    .thumb-img.active { border-color: var(--gold); }
+    .detail-price { font-size: 24px; font-weight: bold; color: var(--gold-light); margin: 10px 0; }
+    .detail-desc { font-size: 13px; line-height: 1.6; color: #ccc; background: #141414; padding: 12px; border-radius: 6px; margin: 15px 0; }
+
+    .action-buttons { display: flex; gap: 10px; margin: 20px 0; }
+    .btn-cart { flex: 1; background: #222; border: 1px solid var(--gold); color: var(--gold); padding: 14px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
+    .btn-buy { flex: 1; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); border: none; color: #000; padding: 14px; font-size: 13px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
+
+    /* Forms & Cards */
+    .box { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+    input, textarea { width: 100%; background: #000; border: 1px solid #333; color: #fff; padding: 13px; margin-bottom: 12px; border-radius: 6px; font-size: 14px; outline: none; }
+    input:focus, textarea:focus { border-color: var(--gold); }
+    .btn-full { width: 100%; background: linear-gradient(135deg, var(--gold-dark), var(--gold)); color: #000; border: none; padding: 15px; font-size: 14px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-radius: 6px; cursor: pointer; }
+
+    .pay-option { display: flex; align-items: center; background: #111; border: 1px solid #333; padding: 14px; border-radius: 8px; margin-bottom: 12px; cursor: pointer; }
+    .pay-option.selected { border-color: var(--gold); background: #19160e; }
+    .pay-option input { width: auto; margin-right: 12px; margin-bottom: 0; }
+
+    .success-screen { text-align: center; padding: 20px 0; }
+    .success-icon { width: 65px; height: 65px; background: rgba(212, 175, 55, 0.2); color: var(--gold); border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 15px; }
+
+    .back-btn { display: inline-flex; align-items: center; gap: 5px; color: var(--gold); font-size: 13px; cursor: pointer; margin-bottom: 15px; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER WITH LEFT LOGO, CENTER TEXT, RIGHT 3-LINE MENU -->
+  <header>
+    <div class="header-logo-left" onclick="goToPage('home')">
+      <!-- Flame Circle Vector Logo -->
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="44" stroke="#d4af37" stroke-width="4.5"/>
+        <path d="M49 13 C47 28 38 39 40 54 C42 66 52 71 54 84 C45 77 33 69 33 52 C33 37 45 25 49 13 Z" fill="url(#gGrad)"/>
+        <path d="M53 32 C58 42 63 50 59 62 C57 68 53 73 50 78 C57 73 66 65 65 52 C64 42 58 35 53 32 Z" fill="url(#gGrad)"/>
+        <path d="M26 69 C35 77 46 81 58 81 C44 87 32 83 23 76 Z" fill="#aa820a"/>
+        <text x="74" y="21" fill="#d4af37" font-size="8.5" font-family="'Montserrat', sans-serif" font-weight="bold">TM</text>
+        <defs>
+          <linearGradient id="gGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#f5e7b2"/>
+            <stop offset="50%" stop-color="#d4af37"/>
+            <stop offset="100%" stop-color="#aa820a"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="header-center-text" onclick="goToPage('home')">
+      <div class="brand-title">AMBRAAS</div>
+      <div class="brand-sub">PROFESSIONAL</div>
+    </div>
+
+    <!-- 3-Line Menu Trigger -->
+    <div class="menu-btn" onclick="toggleMenu(true)">
+      <div class="menu-bar"></div>
+      <div class="menu-bar"></div>
+      <div class="menu-bar"></div>
+    </div>
+  </header>
+
+  <!-- DRAWER OVERLAY & MENU (6-7 OPTIONS WITH ICONS) -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="toggleMenu(false)"></div>
+  <div class="drawer-menu" id="drawerMenu">
+    <div class="drawer-header">
+      <div style="font-family:'Cinzel', serif; font-size:16px; color:var(--gold);">Menu Navigation</div>
+      <button class="close-btn" onclick="toggleMenu(false)">✕</button>
+    </div>
+
+    <div class="menu-list">
+      <div class="menu-item" onclick="menuNavigate('home')">
+        <span class="menu-icon">🛍️</span>
+        <span>All Products</span>
+      </div>
+      <div class="menu-item" onclick="menuNavigate('cart')">
+        <span class="menu-icon">🛒</span>
+        <span>Your Cart</span>
+        <span class="menu-badge" id="cartCount">1</span>
+      </div>
+      <div class="menu-item" onclick="menuNavigate('history')">
+        <span class="menu-icon">📦</span>
+        <span>Your Orders</span>
+      </div>
+      <div class="menu-item" onclick="menuNavigate('track')">
+        <span class="menu-icon">🚚</span>
+        <span>Track Consignment</span>
+      </div>
+      <div class="menu-item" onclick="menuNavigate('support')">
+        <span class="menu-icon">💬</span>
+        <span>Customer Support</span>
+      </div>
+      <div class="menu-item" onclick="menuNavigate('reviews')">
+        <span class="menu-icon">⭐</span>
+        <span>Client Ratings</span>
+      </div>
+      <a href="https://wa.me/919876543210?text=Hello%20Ambraas%20Professional" target="_blank" class="menu-item" style="text-decoration:none;">
+        <span class="menu-icon">🟢</span>
+        <span>WhatsApp Concierge</span>
+      </a>
+    </div>
+
+    <div style="margin-top:auto; padding-top:20px; border-top:1px solid #222; text-align:center; font-size:11px; color:#777;">
+      Ambraas Professional © 2026<br>Luxury Hair Formulations
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- PAGE 1: ALL PRODUCTS -->
+    <div id="page-home">
+      <h2 class="page-title">Exclusive Range</h2>
+      <div id="productGrid" class="product-grid">Loading catalogue...</div>
+    </div>
+
+    <!-- PAGE 2: PRODUCT DETAIL PAGE -->
+    <div id="page-detail" style="display:none;">
+      <a class="back-btn" onclick="goToPage('home')">← Back to Catalogue</a>
+      <img id="dImgMain" src="" class="detail-img-main">
+      <div class="thumbnail-row" id="dThumbs"></div>
+
+      <h2 id="dTitle" style="font-family:'Cinzel', serif; font-size:22px; color:#fff; margin-top:10px;"></h2>
+      <p id="dTagline" style="font-size:12px; color:#aaa; margin-top:4px;"></p>
+      <div class="detail-price" id="dPrice"></div>
+
+      <div class="action-buttons">
+        <button class="btn-cart" onclick="addToCartAlert()">Add To Cart</button>
+        <button class="btn-buy" onclick="startCheckout()">Buy Now</button>
+      </div>
+
+      <h3 style="font-family:'Cinzel', serif; font-size:15px; color:var(--gold); margin-bottom:8px;">Product Description</h3>
+      <div class="detail-desc" id="dDesc"></div>
+    </div>
+
+    <!-- PAGE: CART -->
+    <div id="page-cart" style="display:none;">
+      <h2 class="page-title">Shopping Cart</h2>
+      <div class="box">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; padding-bottom:12px;">
+          <div>
+            <div id="cartItemName" style="font-weight:600; font-size:14px; color:var(--gold-light);">Keratin Smooth Cream</div>
+            <div style="font-size:12px; color:#888;">Quantity: 1</div>
+          </div>
+          <b id="cartItemPrice" style="color:var(--gold); font-size:16px;">₹1899</b>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin:15px 0; font-size:13px;">
+          <span>Delivery Charge:</span>
+          <span style="color:#4caf50;">FREE</span>
+        </div>
+        <button class="btn-full" onclick="startCheckout()">Proceed to Checkout →</button>
+      </div>
+    </div>
+
+    <!-- PAGE 3: ADDRESS CHECKOUT -->
+    <div id="page-address" style="display:none;">
+      <a class="back-btn" onclick="goToPage('detail')">← Back</a>
+      <div class="box">
+        <h3 style="font-family:'Cinzel', serif; color:var(--gold); margin-bottom:15px; text-align:center;">Shipping Address</h3>
+        <input type="text" id="custName" placeholder="Full Name">
+        <input type="tel" id="custPhone" placeholder="10-Digit Mobile Number">
+        <textarea id="custAddress" rows="3" placeholder="Complete Street Address"></textarea>
+        <input type="text" id="custCity" placeholder="City">
+        <input type="number" id="custPin" placeholder="Pincode">
+        <button class="btn-full" onclick="proceedToPayment()">Continue To Payment →</button>
+      </div>
+    </div>
+
+    <!-- PAGE 4: PAYMENT OPTIONS -->
+    <div id="page-payment" style="display:none;">
+      <a class="back-btn" onclick="goToPage('address')">← Back</a>
+      <div class="box">
+        <h3 style="font-family:'Cinzel', serif; color:var(--gold); margin-bottom:15px; text-align:center;">Select Payment Mode</h3>
+
+        <label class="pay-option" onclick="selectPay(this)">
+          <input type="radio" name="payMethod" value="UPI (GPay / PhonePe / Paytm)">
+          <div>
+            <div style="font-weight:600; font-size:13px;">UPI (Google Pay / PhonePe)</div>
+            <div style="font-size:11px; color:#888;">Instant Online Payment</div>
+          </div>
+        </label>
+
+        <label class="pay-option" onclick="selectPay(this)">
+          <input type="radio" name="payMethod" value="Cards / Net Banking">
+          <div>
+            <div style="font-weight:600; font-size:13px;">Cards / Net Banking</div>
+            <div style="font-size:11px; color:#888;">Credit & Debit Cards</div>
+          </div>
+        </label>
+
+        <label class="pay-option selected" onclick="selectPay(this)">
+          <input type="radio" name="payMethod" value="Cash on Delivery (COD)" checked>
+          <div>
+            <div style="font-weight:600; font-size:13px;">Cash On Delivery (COD)</div>
+            <div style="font-size:11px; color:#888;">Pay cash upon delivery</div>
+          </div>
+        </label>
+
+        <button class="btn-full" style="margin-top:15px;" onclick="placeFinalOrder()">Place Order Now ✓</button>
+      </div>
+    </div>
+
+    <!-- PAGE 5: ORDER PLACED -->
+    <div id="page-success" style="display:none;">
+      <div class="box success-screen">
+        <div class="success-icon">✓</div>
+        <h2 style="font-family:'Cinzel', serif; color:var(--gold);">Order Placed!</h2>
+        <p style="font-size:12px; color:#aaa; margin-top:5px;">Thank you for shopping with Ambraas Professional.</p>
+        <div style="background:#111; padding:15px; border-radius:8px; text-align:left; margin:20px 0; font-size:13px; line-height:1.7;">
+          <p><b>Order ID:</b> <span id="sOrderId" style="color:var(--gold);"></span></p>
+          <p><b>Product:</b> <span id="sProduct"></span></p>
+          <p><b>Amount:</b> <span id="sPrice" style="color:var(--gold-light);"></span></p>
+          <p><b>Payment Mode:</b> <span id="sPayMethod" style="color:#4caf50;"></span></p>
+        </div>
+        <button class="btn-full" style="margin-bottom:10px;" onclick="trackFromSuccess()">Track Your Order</button>
+        <button class="btn-cart" style="width:100%;" onclick="goToPage('home')">More Shopping</button>
+      </div>
+    </div>
+
+    <!-- PAGE: TRACK CONSIGNMENT -->
+    <div id="page-track" style="display:none;">
+      <h2 class="page-title">Track Consignment</h2>
+      <div class="box">
+        <input type="text" id="trackInput" placeholder="Enter Order ID (e.g. AMB-101)">
+        <button class="btn-full" onclick="trackOrder()">Track Now</button>
+      </div>
+      <div id="trackResult"></div>
+    </div>
+
+    <!-- PAGE: MY ORDERS -->
+    <div id="page-history" style="display:none;">
+      <h2 class="page-title">Your Orders</h2>
+      <div class="box">
+        <input type="tel" id="historyPhone" placeholder="Enter Registered Phone Number">
+        <button class="btn-full" onclick="fetchHistory()">View Orders</button>
+      </div>
+      <div id="historyResult"></div>
+    </div>
+
+    <!-- PAGE: CUSTOMER SUPPORT -->
+    <div id="page-support" style="display:none;">
+      <h2 class="page-title">Concierge & Support</h2>
+      <div class="box" style="text-align:center;">
+        <p style="font-size:13px; color:#ccc; margin-bottom:15px;">24/7 Dedicated Client Assistance</p>
+        <a href="tel:+919876543210" class="btn-full" style="display:block; text-decoration:none; margin-bottom:10px;">📞 Call Direct Helpline</a>
+        <a href="https://wa.me/919876543210" target="_blank" class="btn-cart" style="display:block; text-decoration:none;">💬 WhatsApp Support</a>
+      </div>
+    </div>
+
+    <!-- PAGE: REVIEWS -->
+    <div id="page-reviews" style="display:none;">
+      <h2 class="page-title">Client Reviews</h2>
+      <div class="box">
+        <p style="color:var(--gold); font-size:14px; font-weight:bold; margin-bottom:5px;">★★★★★ 5.0 Rating</p>
+        <p style="font-size:13px; color:#ddd;">"Best salon keratin formula in India. Client retention double ho gayi!"</p>
+        <span style="font-size:11px; color:#888;">— Luxury Salon Studio</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const CATALOGUE = [
+      {
+        id: 1,
+        name: "Keratin Smooth Treatment Cream",
+        tagline: "Salon-Grade Hair Straightening & Repair",
+        price: 1899,
+        images: [
+          "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500",
+          "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=500"
+        ],
+        description: "Formulated exclusively for salons. Penetrates deep into the cortex to rebuild damaged bonds, remove 100% frizz, and deliver a glass-like shine that lasts over 4 months."
+      },
+      {
+        id: 2,
+        name: "Deep Hydration Hair Mask",
+        tagline: "Intense Nourishment For Damaged Hair",
+        price: 899,
+        images: [
+          "https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=500"
+        ],
+        description: "Enriched with pure botanical oils and hydrolysed keratin. Restores softness and moisture balance to chemically treated hair in just 10 minutes."
+      },
+      {
+        id: 3,
+        name: "Post-Keratin Sulphate-Free Shampoo",
+        tagline: "Gentle Cleanse, Color & Keratin Safe",
+        price: 749,
+        images: [
+          "https://images.unsplash.com/photo-1585232351009-aa87416fca90?w=500"
+        ],
+        description: "Zero sulphates, zero parabens. Specially crafted to prolong the life of keratin and botox treatments without stripping natural oils."
+      },
+      {
+        id: 4,
+        name: "Argan Oil Gloss Serum",
+        tagline: "Instant Shine & Frizz Control",
+        price: 599,
+        images: [
+          "https://images.unsplash.com/photo-1608248597359-009d784bb41e?w=500"
+        ],
+        description: "Infused with Moroccan Argan oil. Tames flyaways instantly, seals split ends, and provides heat defense."
+      }
+    ];
+
+    let currentProduct = CATALOGUE[0];
+    let customerData = {};
+    let placedOrderId = "";
+
+    function toggleMenu(open) {
+      document.getElementById('drawerOverlay').style.display = open ? 'block' : 'none';
+      document.getElementById('drawerMenu').classList.toggle('open', open);
+    }
+
+    function menuNavigate(pageId) {
+      toggleMenu(false);
+      goToPage(pageId);
+    }
+
+    function renderCatalogue() {
+      let html = '';
+      CATALOGUE.forEach(p => {
+        html += `
+          <div class="p-card" onclick="openProduct(${p.id})">
+            <img src="${p.images[0]}" alt="${p.name}">
+            <div class="p-card-body">
+              <div class="p-card-title">${p.name}</div>
+              <div class="p-card-tag">${p.tagline}</div>
+              <div class="p-card-footer">
+                <span class="p-card-price">₹${p.price}</span>
+                <button class="btn-view">View Details →</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('productGrid').innerHTML = html;
+    }
+
+    function openProduct(id) {
+      currentProduct = CATALOGUE.find(x => x.id === id);
+      document.getElementById('dImgMain').src = currentProduct.images[0];
+      
+      let thumbHtml = '';
+      currentProduct.images.forEach((img, idx) => {
+        thumbHtml += `<img src="${img}" class="thumb-img ${idx===0?'active':''}" onclick="changeDetailImage(this, '${img}')">`;
+      });
+      document.getElementById('dThumbs').innerHTML = thumbHtml;
+      document.getElementById('dTitle').innerText = currentProduct.name;
+      document.getElementById('dTagline').innerText = currentProduct.tagline;
+      document.getElementById('dPrice').innerText = '₹' + currentProduct.price;
+      document.getElementById('dDesc').innerText = currentProduct.description;
+
+      // Update cart preview
+      document.getElementById('cartItemName').innerText = currentProduct.name;
+      document.getElementById('cartItemPrice').innerText = '₹' + currentProduct.price;
+
+      goToPage('detail');
+    }
+
+    function changeDetailImage(el, src) {
+      document.getElementById('dImgMain').src = src;
+      document.querySelectorAll('.thumb-img').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function addToCartAlert() {
+      alert("✓ " + currentProduct.name + " cart me add ho gaya!");
+      document.getElementById('cartCount').innerText = "1";
+    }
+
+    function startCheckout() {
+      goToPage('address');
+    }
+
+    function proceedToPayment() {
+      const name = document.getElementById('custName').value.trim();
+      const phone = document.getElementById('custPhone').value.trim();
+      const address = document.getElementById('custAddress').value.trim();
+      const city = document.getElementById('custCity').value.trim();
+      const pin = document.getElementById('custPin').value.trim();
+
+      if (!name || !phone || !address || !pin) return alert("Kripya sabhi details bharein!");
+      customerData = { name, phone, address, city: city || "N/A", pincode: pin };
+      goToPage('payment');
+    }
+
+    function selectPay(cardEl) {
+      document.querySelectorAll('.pay-option').forEach(c => c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+      cardEl.querySelector('input').checked = true;
+    }
+
+    async function placeFinalOrder() {
+      const selectedRadio = document.querySelector('input[name="payMethod"]:checked');
+      const payMethod = selectedRadio ? selectedRadio.value : "Cash on Delivery (COD)";
+
+      try {
+        const res = await fetch('/api/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: customerData.name,
+            phone: customerData.phone,
+            address: customerData.address,
+            city: customerData.city,
+            pincode: customerData.pincode,
+            product: currentProduct.name,
+            price: currentProduct.price,
+            paymentMethod: payMethod
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          placedOrderId = data.order.id;
+          document.getElementById('sOrderId').innerText = data.order.id;
+          document.getElementById('sProduct').innerText = data.order.product;
+          document.getElementById('sPrice').innerText = '₹' + data.order.price;
+          document.getElementById('sPayMethod').innerText = payMethod;
+          goToPage('success');
+        } else {
+          alert("Order error: " + data.message);
+        }
+      } catch (err) {
+        alert("Server error!");
+      }
+    }
+
+    function trackFromSuccess() {
+      goToPage('track');
+      document.getElementById('trackInput').value = placedOrderId;
+      trackOrder();
+    }
+
+    function goToPage(pageId) {
+      const allPages = ['home', 'detail', 'cart', 'address', 'payment', 'success', 'track', 'history', 'support', 'reviews'];
+      allPages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) el.style.display = (p === pageId) ? 'block' : 'none';
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function trackOrder() {
+      const id = document.getElementById('trackInput').value.trim();
+      if (!id) return alert("Order ID daalein!");
+      const res = await fetch('/api/track/' + id);
+      const data = await res.json();
+      if (data.success) {
+        const o = data.order;
+        document.getElementById('trackResult').innerHTML = `
+          <div class="box">
+            <h4 style="color:var(--gold)">Order ID: ${o.id}</h4>
+            <p style="font-size:13px; margin:6px 0;">Item: <b>${o.product}</b> (₹${o.price})</p>
+            <p style="font-size:12px; color:#aaa;">Pay Method: ${o.paymentMethod || 'COD'}</p>
+            <div style="margin-top:12px; padding:10px; background:#111; border-left:3px solid var(--gold); border-radius:4px;">
+              <p style="font-size:11px; color:#aaa;">Status:</p>
+              <p style="font-size:14px; font-weight:bold; color:var(--gold-light);">● ${o.status}</p>
+            </div>
+          </div>
+        `;
+      } else {
+        document.getElementById('trackResult').innerHTML = `<p style="color:#ff5555; text-align:center; margin-top:15px;">Order nahi mila!</p>`;
+      }
+    }
+
+    async function fetchHistory() {
+      const phone = document.getElementById('historyPhone').value.trim();
+      if (!phone) return alert("Phone number daalein!");
+      const res = await fetch('/api/my-orders/' + phone);
+      const data = await res.json();
+      if (data.orders && data.orders.length > 0) {
+        let h = '';
+        data.orders.forEach(o => {
+          h += `
+            <div class="box">
+              <span style="font-size:11px; color:#888;">${o.date}</span>
+              <h4 style="color:var(--gold); margin:4px 0;">${o.id} - ${o.product}</h4>
+              <p style="font-size:13px;">₹${o.price} | Mode: <b>${o.paymentMethod || 'COD'}</b></p>
+              <p style="font-size:13px; margin-top:4px;">Status: <b style="color:var(--gold-light);">${o.status}</b></p>
+            </div>
+          `;
+        });
+        document.getElementById('historyResult').innerHTML = h;
+      } else {
+        document.getElementById('historyResult').innerHTML = `<p style="color:#aaa; text-align:center;">Koi orders record nahi mila.</p>`;
+      }
+    }
+
+    renderCatalogue();
+  </script>
+</body>
+</html>
