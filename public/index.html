@@ -421,25 +421,40 @@
       goToPage(pageId);
     }
 
-    function renderCatalogue() {
-      let html = '';
-      CATALOGUE.forEach(p => {
-        html += `
-          <div class="p-card" onclick="openProduct(${p.id})">
-            <img src="${p.images[0]}" alt="${p.name}">
-            <div class="p-card-body">
-              <div class="p-card-title">${p.name}</div>
-              <div class="p-card-tag">${p.tagline}</div>
-              <div class="p-card-footer">
-                <span class="p-card-price">₹${p.price}</span>
-                <button class="btn-view">View Details →</button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      document.getElementById('productGrid').innerHTML = html;
+    async function renderCatalogue() {
+  let list = (typeof CATALOGUE !== 'undefined') ? CATALOGUE : [];
+  try {
+    const res = await fetch('/api/products');
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        list = data;
+        window.CATALOGUE = data;
+      }
     }
+  } catch (err) {
+    console.warn('API fetch failed, fallback used', err);
+  }
+
+  let html = '';
+  list.forEach(p => {
+    const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '');
+    html += `
+      <div class="p-card" onclick="openProduct('${p.id}')">
+        <img src="${imgUrl}" alt="${p.name}">
+        <div class="p-card-body">
+          <div class="p-card-title">${p.name}</div>
+          <div class="p-card-tag">${p.tagline || ''}</div>
+          <div class="p-card-footer">
+            <span class="p-card-price">₹${p.price}</span>
+            <button class="btn-view">View Details →</button>
+          </div>
+        </div>
+      </div>`;
+  });
+  const grid = document.getElementById('productGrid');
+  if (grid) grid.innerHTML = html;
+}
 
     function openProduct(id) {
       currentProduct = CATALOGUE.find(x => x.id === id);
